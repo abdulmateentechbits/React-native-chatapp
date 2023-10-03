@@ -1,7 +1,7 @@
 # OSX
 #
 .DS_Store
-
+.maestro
 # Xcode
 #
 build/
@@ -84,3 +84,4 @@ web-build/
 
 # Configurations
 !env.js
+google-services.json
