@@ -39,12 +39,16 @@ const en = {
     emailFieldPlaceholder: "Enter your email address",
     passwordFieldPlaceholder: "Super secret password here",
     tapToSignIn: "Tap to sign in!",
+    aboutLabel:'About',
+    fullNameLabel:'Full Name',
+    aboutPlaceholder:'Enter about yourself here',
+    fullNamePlaceholder:'Enter your full name here',
     hint: "Hint: you can use any email address and your favorite password :)",
   },
   demoNavigator: {
-    componentsTab: "Components",
+    componentsTab: "Users",
     debugTab: "Debug",
-    communityTab: "Community",
+    communityTab: "Chat",
     podcastListTab: "Podcast",
   },
   demoCommunityScreen: {

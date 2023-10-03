@@ -3,6 +3,7 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
   .props({
+    user: types.optional(types.frozen(), {}),
     authToken: types.maybe(types.string),
     authEmail: "",
   })
@@ -22,6 +23,10 @@ export const AuthenticationStoreModel = types
     setAuthToken(value?: string) {
       store.authToken = value
     },
+    setUser(userObject?: any){
+      store.user = userObject
+    },
+
     setAuthEmail(value: string) {
       store.authEmail = value.replace(/ /g, "")
     },
