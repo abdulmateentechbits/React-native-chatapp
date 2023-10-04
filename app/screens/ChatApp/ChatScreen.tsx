@@ -103,13 +103,11 @@ export const ChatScreen: FC<ChatScreenProps> = observer(function ChatScreen(
               placeholder="Message..."
               multiline
             />
-            <TouchableOpacity style={$sendButton} onPress={sendMessage}>
+            <TouchableOpacity disabled={!message} style={[$sendButton, !message && { backgroundColor: '#12CC8F' }]} onPress={sendMessage}>
               <Icon icon="sent" size={24} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </ImageBackground>
-
-
       </View>
     </>
   )
