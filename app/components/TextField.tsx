@@ -255,6 +255,7 @@ const $inputStyle: TextStyle = {
   paddingHorizontal: 0,
   marginVertical: spacing.xs,
   marginHorizontal: spacing.sm,
+  
 }
 
 const $helperStyle: TextStyle = {

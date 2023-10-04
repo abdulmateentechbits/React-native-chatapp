@@ -16,7 +16,6 @@ export type DemoTabParamList = {
   DemoDebug: undefined
   DemoPodcastList: undefined
   Home: undefined
-  Chat: undefined
 }
 
 /**

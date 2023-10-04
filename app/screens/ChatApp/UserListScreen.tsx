@@ -2,19 +2,25 @@ import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
 import { FlatList, Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import {
-    Header, Icon, // @demo remove-current-line
-    Text
+    Button, Header, Icon, // @demo remove-current-line
+    Text,
+    SectionList,
+    TextField
 } from "../../components"
+import { isRTL } from "../../i18n"
 import { useStores } from "../../models" // @demo remove-current-line
-import { colors } from "../../theme"
+import { AppStackScreenProps } from "../../navigators" // @demo remove-current-line
+import { colors, spacing } from "../../theme"
+import { useHeader } from "../../utils/useHeader" // @demo remove-current-line
+import { useSafeAreaInsetsStyle } from "../../utils/useSafeAreaInsetsStyle"
 import { DemoTabScreenProps } from "app/navigators/DemoNavigator"
 import database from '@react-native-firebase/database';
 import uuid from 'react-native-uuid';
 
 
-interface HomeScreenProps extends DemoTabScreenProps<"Home"> { }
+interface UserListScreenProps extends AppStackScreenProps<"UserList"> { }
 
-export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
+export const UserListScreen: FC<UserListScreenProps> = observer(function UserListScreen(
     _props, // @demo remove-current-line
 ) {
     // @demo remove-block-start
@@ -26,27 +32,36 @@ export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
 
     const [users, setUsers] = useState([]);
     const [oldUser, setOldUsers] = useState([]);
-    const [chatLists, setChatLists] = useState([]);
     const [loading, setLoading] = useState(false);
-
+    const [filter, setFilter] = useState("");
 
 
     useEffect(() => {
-        getAllUsers();
-        getChatList();
+        getAllUsers()
     }, [])
 
     const getAllUsers = () => {
         setLoading(true);
-
+       
         database()
             .ref('/users')
             .once('value')
             .then(snapshot => {
+                console.log("🚀 ~ file: HomeScreen.tsx:39 ~ getAllUsers ~ snapshot:", snapshot.val());
                 setUsers(Object.values(snapshot.val()).filter((usr) => usr?.id !== user.id));
                 setOldUsers(Object.values(snapshot.val()).filter((usr) => usr?.id !== user.id));
                 setLoading(false);
             });
+    }
+
+
+    const filterUsers = (val) => {
+        setFilter(val);
+        setUsers(oldUser.filter((usr) => usr?.name.match(val)))
+    }
+    const cancelFilter = () => {
+        setUsers(oldUser);
+        setFilter("")
     }
 
     const createChatLists = (data) => {
@@ -69,41 +84,33 @@ export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
             delete data['password'];
             data.lastMsg = "";
             data.roomId = roomId;
-
+            
             database()
                 .ref('/chatList/' + user?.id + "/" + data.id)
                 .update(data)
                 .then(() => console.log('Data updated.'));
-
+                           
         } catch (error) {
-            console.log("🚀 ~ file: HomeScreen.tsx:90 ~ createChatLists ~ error:", error)
+             console.log("🚀 ~ file: HomeScreen.tsx:90 ~ createChatLists ~ error:", error)
         }
         navigation.navigate("Chat")
     }
 
-    const getChatList = async () => {
-        database()
-            .ref('/chatList/' + user.id)
-            .on('value', snapshot => {
-                if (snapshot.val() !== null) {
-                    setChatLists(Object.values(snapshot.val()));
-                }
-            });
-
-    }
-
     if (loading) {
+        console.log("Loading............");
         return (<>
             <Text>Loading</Text>
         </>)
     }
+
+    console.log("Users:  ", users)
 
 
 
     return (
         <>
             <Header
-                title="Chats"
+                title="Users"
                 titleMode="flex"
                 titleStyle={$rightAlignTitle}
                 RightActionComponent={
@@ -120,14 +127,29 @@ export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
                 style={{ backgroundColor: '#115E55', elevation: 2 }}
             />
             <View style={$container}>
-
+                {/* search filter */}
+                <View style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'center', gap: 10, alignItems: 'center' }}>
+                    <Icon icon="search" size={22} color="#115E55" style={{ flex: 1 }} />
+                    <TextField
+                        value={filter}
+                        onChangeText={(val) => filterUsers(val)}
+                        containerStyle={$textField}
+                        autoCapitalize="none"
+                        autoComplete="name"
+                        autoCorrect={false}
+                        keyboardType="default"
+                        placeholder="Search by name..."
+                        inputWrapperStyle={$inputWrapperStyle}
+                    />
+                    <TouchableOpacity style={{ flex: 1 }} onPress={cancelFilter}>
+                        <Text style={{color:'#115E55'}}>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
                 <FlatList
-                    data={chatLists}
-                    keyExtractor={(user) => user?.id}
+                    data={users}
+                    keyExtractor={(user) => user.id.toString()}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={$userContainer} onPress={() => navigation.navigate("Chat", {
-                            chatItem: item
-                        })}>
+                        <TouchableOpacity style={$userContainer} onPress={() => createChatLists(item)}>
                             <View style={$leftColumn}>
                                 {/* Circular profile image */}
                                 <Image
@@ -137,7 +159,7 @@ export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
                             </View>
                             <View style={$rightColumn}>
                                 <Text style={$userName}>{item.name}</Text>
-                                <Text style={[$userName, { fontWeight: 'normal' }]}>{item.lastMsg}</Text>
+                                <Text style={[$userName, { fontWeight: 'normal' }]}>{item.about}</Text>
                             </View>
                         </TouchableOpacity>
                     )}
@@ -145,36 +167,20 @@ export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
                     contentContainerStyle={$listContainer}
                 />
             </View>
-            <TouchableOpacity
-                style={$fab}
-                onPress={() => navigation.navigate("UserList")}
-            >
-                <Icon icon="community" color="white" />
-            </TouchableOpacity>
         </>
     )
 })
 
-const $fab: ViewStyle = {
-    position: "absolute",
-    bottom: 16,
-    right: 16,
-    backgroundColor: "#115E55",
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 3, // Add shadow for Android
+const $inputWrapperStyle: ViewStyle = {
+   borderRadius:20,
+   paddingVertical:0,
+   
 }
-const $fabText: TextStyle = {
-    fontSize: 24,
-    color: "#FFFFFF", // Change the text color as needed
-}
-
 const $textField: ViewStyle = {
-    flex: 3,
-    borderRadius: 20
+    flex: 4,
+    borderRadius: 20,
+    minHeight:30,
+    elevation:1
 }
 const $listContainer: ViewStyle = {
     // padding: 16,
@@ -204,16 +210,21 @@ const $userName: TextStyle = {
 }
 
 const $customLeftAction: ViewStyle = {
-    marginHorizontal: 10,
-
+    marginHorizontal: 10
 }
 
 const $rightAlignTitle: TextStyle = {
     textAlign: "left",
-    color: '#FFFFFF'
+    color:'#FFFFFF'
 }
 const $container: ViewStyle = {
     flex: 1,
     backgroundColor: colors.background,
-    marginHorizontal: 16
+    marginHorizontal: 16,
+   
 }
+
+
+
+
+

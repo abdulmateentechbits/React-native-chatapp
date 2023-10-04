@@ -2,6 +2,7 @@ export * from "./WelcomeScreen"
 // @demo remove-block-start
 export * from "./LoginScreen"
 export * from "./ChatApp/HomeScreen"
+export * from "./ChatApp/UserListScreen"
 export * from "./ChatApp/ChatScreen"
 export * from "./RegisterScreen"
 export * from "./DemoCommunityScreen"

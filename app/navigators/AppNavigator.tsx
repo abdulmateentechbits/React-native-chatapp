@@ -34,6 +34,17 @@ import { colors } from "app/theme"
  *   https://reactnavigation.org/docs/typescript#type-checking-the-navigator
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
+export interface ChatParams {
+  about: string;
+  emailId: string;
+  id: string;
+  img: string;
+  lastMsg: string;
+  name: string;
+  roomId: string;
+  token: string;
+}
+
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined // @demo remove-current-line
@@ -41,6 +52,8 @@ export type AppStackParamList = {
   Demo: NavigatorScreenParams<DemoTabParamList> // @demo remove-current-line
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  Chat:{chatItem:ChatParams}
+  UserList:undefined
 }
 
 /**
@@ -76,6 +89,8 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
           {/* @demo remove-block-start */}
           <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="Chat" component={Screens.ChatScreen} />
+          <Stack.Screen name="UserList" component={Screens.UserListScreen} />
         </>
       ) : (
         <>
