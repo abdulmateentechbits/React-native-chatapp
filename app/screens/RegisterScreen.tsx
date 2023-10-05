@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle } from "react-native"
+import { TextInput, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
@@ -108,7 +108,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
       contentContainerStyle={$screenContentContainer}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="login-heading" text="Register" preset="heading" style={$signIn} />
+      <Text testID="login-heading" text="Register" preset="heading" style={[$signIn,{color:colors.palette.appPrimaryTextColor}]} />
       {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
 
       <TextField
@@ -172,11 +172,19 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
 
       <Button
         testID="login-button"
-        tx="loginScreen.tapToSignIn"
+        text="Register"
         style={$tapButton}
         preset="reversed"
         onPress={register}
       />
+      <View style={{ marginTop: 10, alignSelf: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text>Already account ?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={{ color: 'red' }}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </Screen>
   )
 })
@@ -184,6 +192,8 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
 const $screenContentContainer: ViewStyle = {
   paddingVertical: spacing.xxl,
   paddingHorizontal: spacing.lg,
+  flex:1,
+  justifyContent:'center'
 }
 
 const $signIn: TextStyle = {
@@ -205,6 +215,7 @@ const $textField: ViewStyle = {
 
 const $tapButton: ViewStyle = {
   marginTop: spacing.xs,
+  backgroundColor: colors.palette.appPrimaryColor
 }
 
 // @demo remove-file

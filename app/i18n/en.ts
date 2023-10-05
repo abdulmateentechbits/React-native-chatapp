@@ -37,7 +37,7 @@ const en = {
     emailFieldLabel: "Email",
     passwordFieldLabel: "Password",
     emailFieldPlaceholder: "Enter your email address",
-    passwordFieldPlaceholder: "Super secret password here",
+    passwordFieldPlaceholder: "Enter password here",
     tapToSignIn: "Tap to sign in!",
     aboutLabel:'About',
     fullNameLabel:'Full Name',

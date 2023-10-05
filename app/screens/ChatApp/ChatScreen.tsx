@@ -17,7 +17,7 @@ import storage from '@react-native-firebase/storage';
 
 const chatbg = require("../../../assets/images/chatbg.png");
 
-const { height: windowHeight } = Dimensions.get('window');
+const { height: windowHeight,width:windowWidth } = Dimensions.get('window');
 
 interface ChatScreenProps extends AppStackScreenProps<"Chat"> { }
 
@@ -120,7 +120,7 @@ export const ChatScreen: FC<ChatScreenProps> = observer(function ChatScreen(
   const renderMessageContent = (item) => {
     if (item.msgType === 'image') {
       return (
-        <Image source={{ uri: item.message }} style={{ width: 200, height: 200 }} />
+        <Image source={{ uri: item.message }} style={{ width: windowWidth/1.5, height: 200 }} />
       );
     } else {
       return (

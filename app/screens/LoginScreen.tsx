@@ -13,7 +13,7 @@ interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const { navigation } = _props;
   const authPasswordInput = useRef<TextInput>()
-  
+
   const [authPassword, setAuthPassword] = useState("")
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -28,7 +28,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   function login() {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
-    
+
     if (validationError) return
 
     try {
@@ -38,7 +38,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         .equalTo(authEmail)
         .once('value')
         .then(snapshot => {
-          if(snapshot.val() === null){
+          if (snapshot.val() === null) {
             console.log("🚀 ~ file: LoginScreen.tsx:40 ~ login ~ Invalid Email");
             Toast.showWithGravity(
               'Invalid Email',
@@ -47,11 +47,11 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             );
             return
           }
-              
+
           let userData = Object.values(snapshot.val())["0"];
           console.log("🚀 ~ file: LoginScreen.tsx:51 ~ login ~ userData:", userData)
 
-          if(userData?.password !== authPassword){
+          if (userData?.password !== authPassword) {
             console.log("🚀 ~ file: LoginScreen.tsx:40 ~ login ~ Invalid Password");
             Toast.showWithGravity(
               'Invalid Password',
@@ -64,10 +64,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
           setAuthEmail("");
           setAuthPassword("");
           setUser(userData);
-          setAuthToken(userData?.token);         
+          setAuthToken(userData?.token);
 
         });
-        
+
     } catch (error) {
       console.log("🚀 ~ file: LoginScreen.tsx:47 ~ login ~ error:", error)
       setIsSubmitted(false)
@@ -78,7 +78,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
     // Make a request to your server to get an authentication token.
     // If successful, reset the fields and set the token.
-    
+
 
     // We'll mock this with a fake token.
     // setAuthToken(String(Date.now()))
@@ -90,7 +90,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         return (
           <Icon
             icon={isAuthPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
+            color={colors.palette.appPrimaryTextColor}
             containerStyle={props.style}
             size={20}
             onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
@@ -106,7 +106,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       contentContainerStyle={$screenContentContainer}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
+      <View style={{marginBottom:15}}>
+        <Text testID="login-heading" text="Whatsapp Lite" preset="heading" style={[$signIn, { textAlign: 'center',color:colors.palette.appPrimaryTextColor }]} />
+        {/* <Text testID="login-heading" text="Sign In" preset="heading" style={[$signIn, { textAlign: 'center',color:colors.palette.appPrimaryTextColor }]} /> */}
+      </View>
 
       <TextField
         value={authEmail}
@@ -140,7 +143,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
       <Button
         testID="login-button"
-        tx="loginScreen.tapToSignIn"
+        text="Login"
         style={$tapButton}
         preset="reversed"
         onPress={login}
@@ -160,6 +163,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 const $screenContentContainer: ViewStyle = {
   paddingVertical: spacing.xxl,
   paddingHorizontal: spacing.lg,
+  flex: 1,
+  justifyContent: 'center'
 }
 
 const $signIn: TextStyle = {
@@ -176,6 +181,7 @@ const $textField: ViewStyle = {
 
 const $tapButton: ViewStyle = {
   marginTop: spacing.xs,
+  backgroundColor: colors.palette.appPrimaryColor
 }
 
 // @demo remove-file
