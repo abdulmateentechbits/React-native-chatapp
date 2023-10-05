@@ -49,37 +49,6 @@ export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
             });
     }
 
-    const createChatLists = (data) => {
-        const roomId = uuid.v4();
-        const myData = {
-            roomId,
-            name: user.name,
-            img: user.img,
-            emailId: user.emailId,
-            about: user.about,
-            token: user.token,
-            lastMsg: ""
-        }
-        try {
-            database()
-                .ref('/chatList/' + data?.id + "/" + user.id)
-                .update(myData)
-                .then(() => console.log('Data updated.'));
-
-            delete data['password'];
-            data.lastMsg = "";
-            data.roomId = roomId;
-
-            database()
-                .ref('/chatList/' + user?.id + "/" + data.id)
-                .update(data)
-                .then(() => console.log('Data updated.'));
-
-        } catch (error) {
-            console.log("🚀 ~ file: HomeScreen.tsx:90 ~ createChatLists ~ error:", error)
-        }
-        navigation.navigate("Chat")
-    }
 
     const getChatList = async () => {
         database()
@@ -124,23 +93,29 @@ export const HomeScreen: FC<HomeScreenProps> = observer(function HomeScreen(
                 <FlatList
                     data={chatLists}
                     keyExtractor={(user) => user?.id}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity style={$userContainer} onPress={() => navigation.navigate("Chat", {
-                            chatItem: item
-                        })}>
-                            <View style={$leftColumn}>
-                                {/* Circular profile image */}
-                                <Image
-                                    source={{ uri: item.img }}
-                                    style={$profileImage}
-                                />
-                            </View>
-                            <View style={$rightColumn}>
-                                <Text style={$userName}>{item.name}</Text>
-                                <Text style={[$userName, { fontWeight: 'normal' }]}>{item.lastMsg}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
+                    renderItem={({ item }) => {
+                        console.log("🚀 ~ file: HomeScreen.tsx:97 ~ item:", item)
+                        
+                        return (
+                            <TouchableOpacity style={$userContainer} onPress={() => navigation.navigate("Chat", {
+                                chatItem: item
+                            })}>
+                                <View style={$leftColumn}>
+                                    {/* Circular profile image */}
+                                    <Image
+                                        source={{ uri: item.img }}
+                                        style={$profileImage}
+                                    />
+                                </View>
+                                <View style={$rightColumn}>
+                                    <Text style={$userName}>{item.name}</Text>
+                                    <Text style={[$userName, { fontWeight: 'normal' }]}>
+                                        {item.lastMsg.length > 30 ? item.lastMsg.slice(0, 30) + '...' : item.lastMsg}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }}
                     numColumns={1}
                     contentContainerStyle={$listContainer}
                 />
@@ -167,15 +142,7 @@ const $fab: ViewStyle = {
     justifyContent: "center",
     elevation: 3, // Add shadow for Android
 }
-const $fabText: TextStyle = {
-    fontSize: 24,
-    color: "#FFFFFF", // Change the text color as needed
-}
 
-const $textField: ViewStyle = {
-    flex: 3,
-    borderRadius: 20
-}
 const $listContainer: ViewStyle = {
     // padding: 16,
 }
@@ -201,6 +168,7 @@ const $profileImage: ImageStyle = {
 const $userName: TextStyle = {
     fontSize: 16,
     fontWeight: 'bold',
+    textTransform: 'capitalize'
 }
 
 const $customLeftAction: ViewStyle = {

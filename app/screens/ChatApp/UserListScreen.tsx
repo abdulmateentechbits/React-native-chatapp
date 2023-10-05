@@ -42,7 +42,7 @@ export const UserListScreen: FC<UserListScreenProps> = observer(function UserLis
 
     const getAllUsers = () => {
         setLoading(true);
-       
+
         database()
             .ref('/users')
             .once('value')
@@ -65,42 +65,67 @@ export const UserListScreen: FC<UserListScreenProps> = observer(function UserLis
     }
 
     const createChatLists = (data) => {
-        const roomId = uuid.v4();
-        const myData = {
-            roomId,
-            name: user.name,
-            img: user.img,
-            emailId: user.emailId,
-            about: user.about,
-            token: user.token,
-            lastMsg: ""
-        }
-        try {
-            database()
-                .ref('/chatList/' + data?.id + "/" + user.id)
-                .update(myData)
-                .then(() => console.log('Data updated.'));
+        database()
+            .ref('/chatList/' + user?.id + "/" + data?.id)
+            .once('value')
+            .then((snapshot) => {
 
-            delete data['password'];
-            data.lastMsg = "";
-            data.roomId = roomId;
-            
-            database()
-                .ref('/chatList/' + user?.id + "/" + data.id)
-                .update(data)
-                .then(() => console.log('Data updated.'));
-                           
-        } catch (error) {
-             console.log("🚀 ~ file: HomeScreen.tsx:90 ~ createChatLists ~ error:", error)
-        }
-        navigation.navigate("Chat")
+                if (snapshot.val() === null) {
+                    const roomId = uuid.v4();
+                    const myData = {
+                        roomId,
+                        id: user.id,
+                        name: user.name,
+                        img: user.img,
+                        emailId: user.emailId,
+                        about: user.about,
+                        token: user.token,
+                        lastMsg: ""
+                    }
+                    try {
+                        database()
+                            .ref('/chatList/' + data?.id + "/" + user.id)
+                            .update(myData)
+                            .then(() => console.log('Data updated.'));
+
+                        delete data['password'];
+                        data.lastMsg = "";
+                        data.roomId = roomId;
+
+                        database()
+                            .ref('/chatList/' + user?.id + "/" + data.id)
+                            .update(data)
+                            .then(() => console.log('Data updated.'));
+
+                    } catch (error) {
+                        console.log("🚀 ~ file: HomeScreen.tsx:90 ~ createChatLists ~ error:", error)
+                    }
+                    navigation.navigate("Chat", {
+                        chatItem: data
+                    })
+                    console.log("Data snapshot B", snapshot.val())
+
+                } else {
+                    console.log("Data snapshot A", snapshot.val())
+                    navigation.navigate("Chat", {
+                        chatItem: snapshot.val()
+                    })
+
+                }
+
+            });
+
+
+
     }
 
     if (loading) {
         console.log("Loading............");
-        return (<>
-            <Text>Loading</Text>
-        </>)
+        return (
+            <>
+                <Text>Loading</Text>
+            </>
+        )
     }
 
     console.log("Users:  ", users)
@@ -142,7 +167,7 @@ export const UserListScreen: FC<UserListScreenProps> = observer(function UserLis
                         inputWrapperStyle={$inputWrapperStyle}
                     />
                     <TouchableOpacity style={{ flex: 1 }} onPress={cancelFilter}>
-                        <Text style={{color:'#115E55'}}>Cancel</Text>
+                        <Text style={{ color: '#115E55' }}>Cancel</Text>
                     </TouchableOpacity>
                 </View>
                 <FlatList
@@ -172,15 +197,15 @@ export const UserListScreen: FC<UserListScreenProps> = observer(function UserLis
 })
 
 const $inputWrapperStyle: ViewStyle = {
-   borderRadius:20,
-   paddingVertical:0,
-   
+    borderRadius: 20,
+    paddingVertical: 0,
+
 }
 const $textField: ViewStyle = {
     flex: 4,
     borderRadius: 20,
-    minHeight:30,
-    elevation:1
+    minHeight: 30,
+    elevation: 1
 }
 const $listContainer: ViewStyle = {
     // padding: 16,
@@ -215,13 +240,13 @@ const $customLeftAction: ViewStyle = {
 
 const $rightAlignTitle: TextStyle = {
     textAlign: "left",
-    color:'#FFFFFF'
+    color: '#FFFFFF'
 }
 const $container: ViewStyle = {
     flex: 1,
     backgroundColor: colors.background,
     marginHorizontal: 16,
-   
+
 }
 
 
